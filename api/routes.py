@@ -1,7 +1,12 @@
 from typing import Dict
+
 from fastapi import APIRouter, HTTPException, status
 
-from api.schemas import CreateTaskSchema, UpdateTaskSchema, ResponseTaskSchema, PredictionRequestSchema, PredictionResponseSchema
+from api.schemas import (CreateTaskSchema,
+                         UpdateTaskSchema,
+                         ResponseTaskSchema,
+                         PredictionRequestSchema,
+                         PredictionResponseSchema)
 from model import tokinize_sentese
 from joblib import load
 
@@ -16,7 +21,9 @@ db: Dict[int, dict] = {}
     "/tasks",
     response_model=list[ResponseTaskSchema],
     status_code=status.HTTP_200_OK,
-    summary="Gives as the entire list of tasks"
+    summary="Gives as the entire list of tasks",
+    description="Get a list all our task with id, title,\
+                description, completed status (true, false)"
 )
 def get_tasks():
     return list(db.values())
@@ -26,7 +33,11 @@ def get_tasks():
     "/tasks",
     response_model=ResponseTaskSchema,
     status_code=status.HTTP_201_CREATED,
-    summary="Create new task"
+    summary="Create new task",
+    description="Create a new task with filds:\
+                title (required string field)\
+                description (optional string field)\
+                completed (oprional bool field, false by default)"
 )
 def create_task(task: CreateTaskSchema):
     global id_count
@@ -42,7 +53,11 @@ def create_task(task: CreateTaskSchema):
     "/tasks/{id}",
     response_model=ResponseTaskSchema,
     status_code=status.HTTP_200_OK,
-    summary="Upadte task by id"
+    summary="Upadte task by id",
+    description="Update all filds what you want, remind the restrictions\
+                title (required string field)\
+                description (optional string field)\
+                completed (oprional bool field, false by default)"
 )
 def update_task(id: int, update: UpdateTaskSchema):
     if id not in db:
@@ -61,7 +76,8 @@ def update_task(id: int, update: UpdateTaskSchema):
 @router.delete(
     "/tasks/{id}",
     status_code=status.HTTP_204_NO_CONTENT,
-    summary="Delete task by id"
+    summary="Delete task by id",
+    description="Delete task by id, I don't know what to add"
 )
 def delete_task(id: int):
     if id not in db:
